@@ -1,0 +1,1339 @@
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+#include <iomanip>
+#include <cctype>
+#include <string>
+#include <limits>
+using namespace std;
+
+//adventure class
+class Adventure
+{
+    public:
+        Adventure() //constructor
+        {
+            adventureCompleted = false;
+            stage = 1;
+            map = {"Stage 1", "Stage 2", "Stage 3", "Stage 4", "Stage 5", "Stage 6", "Stage 7", "Stage 8", "Stage 9", "Stage 10", "Stage 11", "Stage 12", "Stage 13", "Stage 14", "Stage 15", "Stage 16", "Stage 17", "Stage 18", "Stage 19", "Dragon's Lair"};
+        }
+        
+        int getStage();
+        
+        bool getAdventure();
+        
+        void story();
+        void keybinds();
+        void showMap();
+        void setAdventure(bool adventureCompleted);
+        void updateStage();
+        
+    private:
+        vector<string> map;
+        
+        int stage;
+        
+        bool adventureCompleted;
+};
+
+//player class
+class Player
+{
+    public:
+        Player() //constructor
+        {
+            playerName = "?";
+            playerMaxHealth = 10;
+            playerHealth = playerMaxHealth;
+            playerAttack = 1;
+            playerDefense = 5;
+            bag = {};
+            TFcoin = false;
+            restorehp = 0;
+        }
+
+        string getName();
+        
+        double getHealth();
+        double getAttack();
+        double getDefense();
+        double getMaxHealth();
+        
+        bool hasPotion(string itemName);
+        bool bagFull();
+        
+        void increaseHealth(double healthBoost);
+        void increaseMaxHealth(double maxHealthBoost);
+        void increaseAttack(double attackBoost);
+        void increaseDefense(double defenseBoost);
+        void stats();
+        void die();
+        void setName(string playerName);
+        void setHealth(double playerHealth);
+        void openBag();
+        void addPotion(string itemName);
+        void usePotion(string itemName);
+        void hasLuckyCoin(bool coin);
+        void RESTOREHP(double coin);
+        void restoreHP();
+        bool getLuckyCoin();
+        
+        
+    private:
+        vector<string> bag;
+        
+        string playerName;
+        
+        double playerHealth;
+        double playerMaxHealth;
+        double playerAttack;
+        double playerDefense;
+        bool TFcoin;
+        double restorehp;
+};
+
+void Adventure::story()
+{
+    cout<<"-----------"<<endl;
+    cout << "Story:\nYou are a brave warrior who has volunteered to help defeat the dragon laying waste to the kingdom. You must first embark on a treacherous journey before reaching the dragon's lair to confront it. Be warned. Making the wrong choice can lead to an untimely death, and your adventure will end. Good luck: your adventure begins now.\n" << endl;
+    cout<<"-----------"<<endl;
+}
+
+void Adventure::keybinds()
+{
+    cout << "Keybinds\n------------" << endl;
+    cout << "1: Attack" << endl;
+    cout << "2: Block" << endl;
+    cout << "3: Use item" << endl;
+    cout << "------------" << endl;
+    //use _ to replace space
+}
+
+void Adventure::showMap()
+{
+    cout<<"-----------"<<endl;
+    for (int i = map.size() - 1; i >= 0; --i)
+    {
+        cout << map.at(i);
+        if (i + 1 == stage)
+        {
+            cout << "   <-- You are here";
+        }
+        cout << endl;
+    }
+    cout<<"-----------"<<endl;
+}
+
+void Adventure::setAdventure(bool adventureCompleted)
+{
+    this->adventureCompleted = adventureCompleted;
+}
+
+void Adventure::updateStage()
+{
+    stage++;
+}
+
+bool Adventure::getAdventure()
+{
+    return adventureCompleted;
+}
+
+int Adventure::getStage()
+{
+    return stage;
+}
+
+void Player::stats()
+{
+    cout<<"------------"<<endl;
+    cout << playerName << "'s stats:" << endl;
+    cout << "Health: " << playerHealth << "/" << playerMaxHealth << endl;
+    cout << "Attack: " << playerAttack << endl;
+    cout << "Defense: " << playerDefense << " (Reduces incoming damage by " << playerDefense << "%)" << endl;
+    cout<<"------------"<<endl;
+}
+
+void Player::die()
+{
+    playerHealth = 0;
+}
+
+void Player::setName(string playerName)
+{
+    this->playerName = playerName;
+}
+
+void Player::setHealth(double playerHealth)
+{
+    this->playerHealth = playerHealth;
+}
+
+void Player::openBag()
+{
+    int i;
+    
+    cout << playerName << "'s inventory\n------------" << endl;
+    for (i = 0; i < bag.size(); ++i)
+    {
+        if (i != 0 && i % 5 == 0)
+        {
+            cout << bag.at(i);
+        }
+        else
+        {
+            cout << bag.at(i) << " ";
+        }
+        
+    }
+    cout<<endl;
+    cout<<"------------"<<endl;
+}
+
+void Player::addPotion(string itemName)
+{
+    bag.push_back(itemName);
+}
+
+void Player::usePotion(string itemName)
+{
+    if (itemName == "Health_Potion")
+    {
+        increaseHealth(20);
+    }
+    else if (itemName == "Attack_Potion")
+    {
+        increaseAttack(5);
+    }
+    else if (itemName == "Defense_Potion")
+    {
+        increaseDefense(5);
+    }
+    for (int i = 0; i < bag.size(); ++i)
+    {
+        if (bag.at(i) == itemName && bag.size() > 1)
+        {
+            string temp = bag.at(bag.size() - 1);
+            bag.at(bag.size() - 1) = itemName;
+            bag.pop_back();
+            bag.at(i) = temp;
+            break;
+        }
+        else if (bag.at(i) == itemName && i == bag.size() - 1)
+        {
+            bag.pop_back();
+            break;
+        }
+        else
+        {
+            string temp = bag.at(bag.size() - 1);
+            bag.at(bag.size() - 1) = itemName;
+            bag.pop_back();
+            break;
+        }
+    }
+}
+double Player::getMaxHealth(){
+    return playerMaxHealth;
+}
+
+void Player::increaseHealth(double healthBoost)
+{
+    playerHealth = healthBoost;
+    cout<<"------------"<<endl;
+    cout << "Your current health has increased by " << healthBoost << "." << endl;
+    cout << "Current health: " << playerHealth << "/" << playerMaxHealth << endl;
+    cout<<"------------"<<endl;
+}
+
+void Player::increaseMaxHealth(double maxHealthBoost)
+{
+    playerMaxHealth += maxHealthBoost;
+    cout<<"------------"<<endl;
+    cout << "Your max health has increased by " << maxHealthBoost << "." << endl;
+    cout << "New max health: " << playerMaxHealth << endl;
+    cout<<"------------"<<endl;
+}
+
+void Player::increaseAttack(double attackBoost)
+{
+    playerAttack += attackBoost;
+    cout<<"------------"<<endl;
+    cout << "Your attack has increased by " << attackBoost << "." << endl;
+    cout << "Attack: " << playerAttack << endl;
+    cout<<"------------"<<endl;
+}
+
+void Player::increaseDefense(double defenseBoost)
+{
+    playerDefense += defenseBoost;
+    cout<<"------------"<<endl;
+    cout << "Your defense has increased by " << defenseBoost << "." << endl;
+    cout << "Defense: " << playerDefense << endl;
+    cout<<"------------"<<endl;
+}
+
+string Player::getName()
+{
+    return playerName;
+}
+
+double Player::getHealth()
+{
+    return playerHealth;
+}
+
+double Player::getAttack()
+{
+    return playerAttack;
+}
+
+double Player::getDefense()
+{
+    return playerDefense;
+}
+
+bool Player::hasPotion(string itemName)
+{
+    for (int i = 0; i < bag.size(); ++i)
+    {
+        if (itemName == bag.at(i))
+        {
+            return true;
+            break;
+        }
+    }
+    
+    return false;
+}
+
+bool Player::bagFull()
+{
+    if (bag.size() > 0)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
+
+void Player::hasLuckyCoin(bool coin){
+    TFcoin = coin;
+}
+void Player::RESTOREHP(double coin){
+    restorehp=coin;
+}
+void Player::restoreHP(){
+    if(playerHealth<=0&&TFcoin){
+        playerHealth = playerMaxHealth*(restorehp/100.0);
+        cout<<"The Lucky Coin protects you from death."<<endl;
+        TFcoin = false;
+    }
+}
+
+bool Player::getLuckyCoin(){
+    return TFcoin;
+}
+
+class Dragon {
+    public:
+        void DragonLair(Player &P);
+        Dragon();
+        double ShowDragonHP() const;
+        int ShowDragonAP() const;
+        int ShowDragonDEF() const;
+        void SetDragonHP(Player P);
+        void SetDragonDEF(int DEF);
+        double getDragonDamage();
+    private:
+        double DragonHP;
+        int DragonAP;
+        int DragonDEF;
+        int Skill;
+        int result;
+        double DragonDamage;
+       
+};
+Dragon::Dragon(){
+    DragonHP = 100;
+    DragonAP = 7;
+    DragonDEF = 20;
+}
+
+double Dragon::getDragonDamage(){
+    return DragonDamage;
+}
+
+double Dragon::ShowDragonHP() const{
+    return DragonHP;
+}
+
+int Dragon::ShowDragonAP() const{
+    return DragonAP;
+}
+
+int Dragon::ShowDragonDEF() const{
+    return DragonDEF;
+}
+
+void Dragon::SetDragonHP(Player P){
+    DragonHP -= P.getAttack();
+}
+
+void Dragon::SetDragonDEF(int DEF){
+    DragonDEF = DEF;
+}
+
+void Dragon::DragonLair(Player &P){
+    cout<<"------------------------------------------------------------------------------------------------------"<<endl;
+    cout<<"After overcoming countless hardships, you have finally reached the dragon Nidhogg. Go forth, warrior!"<<endl;
+
+    cout<<"------------------------------------------------------------------------------------------------------"<<endl;
+    cout << "                            |\\                                       ___.\n";
+    cout << "                            ||\\_____          /====================>/`,--`\n";
+    cout << "                            ||    ,(__,      //  ,_____,----------//_:\n";
+    cout << "                            ||   /    |  ,=='  ./                / \\  \\ \n";
+    cout << "                    ,      ,|:  / ,___\\_/     /     ,____,------(   \\_ \\\n";
+    cout << "                   />\\    /<\\  \\       /       ____'     \\.      \\   |  \\\n";
+    cout << "                  // /,,,,\\ \\\\__J_____/      ,     \\       \\.  ___\\  |_  \\\n";
+    cout << "                 /'  ~\"\"\"\"~  '\\      /        \\     \\        \\/     /     >\n";
+    cout << "             __|\\___~,|  |,~___/|__ /          \\     \\       /___--'`    /\n";
+    cout << "             \\_  /<d)\\,\\/,/(6>\\  _/       /\\    |     \\ _____|          /\n";
+    cout << "             /_  \\__>|=\\/=|<__/  _\\      |  \\   |      (               /\n";
+    cout << "               |/  |~>====<~|  \\|            \\  | _____|              /\n";
+    cout << "                \\  \\<o____o>/  /              \\ |/                 |,/\n";
+    cout << "               / \\  >VvvvvV<  /                \\/     \\            \\__,\n";
+    cout << "              /,^,\\_\\ |  | /_/     \\        |          \\             /\n";
+    cout << "         _.--'`: :,-//\\^^/\\\\ `,     |      /    ,______=\\_____,     /\n";
+    cout << "          `--.__.__-\\======/   `====|     |===='    `---,    /     /\n";
+    cout << "                     ~~~~~~         |     |            /    /     /\n";
+    cout << "                                  __/     \\__       __|    |     |\n";
+    cout << "                                 /---^.=,^---\\     /---^.=_/     \\__\n";
+    cout << "                                 '     V     '     '    /---^.=.^---\\\n";
+    cout << "                                                        '     V     '\n";
+    cout<<"------------------------------------------------------------------------------------------------------"<<endl;
+//by Valkyire, from https://www.asciiart.eu/collections/official-list-of-dragon-ascii-art
+
+    Adventure adventure;
+    double slash;
+    double fire;
+    double slashDamage;
+    double fireDamage;
+    int r1 = 5;//if Skills equal 0-4 is slash, 5-7 is fly, 8-9 is fire
+    int r2 = 8;
+    string playerSkill;
+    string useItem;
+    bool hasItem;
+    double playerDamage;
+    cout<<"------------"<<endl;
+    cout<<"Nidhogg's Stats\nNidhogg's HP: "<<fixed<<setprecision(2)<<DragonHP<<"\nNidhogg's AP: "<<DragonAP<<"\nNidhogg's DEF: "<<DragonDEF<<endl;
+    cout<<"------------"<<endl;
+    while(DragonHP>0 && P.getHealth()>0){
+        
+        playerDamage = P.getAttack() *(1 - DragonDEF/100.0);
+        slash = DragonAP;//slash damage
+        fire = DragonAP * 2;//fire damage
+        slashDamage = slash*(1-P.getDefense()/100.0);
+        fireDamage = fire*(1-P.getDefense()/100.0);
+        
+        if(DragonHP<=50){//Phase 2
+            r1=3;//0-2 will be slash, 3-4 will be fly, 5-9 will be fire
+            r2=5;
+            DragonAP = 10;
+        }
+        
+        Skill = rand() % 10;
+        
+        
+        
+        
+        if(Skill<r1) {
+            cout<<"Nidhogg uses a slashing attack."<<endl;
+            cout<<"\nEnter your skill: ";
+            
+            cin>>playerSkill;
+            cout<<endl;
+            while(playerSkill != "1" && playerSkill != "2" && playerSkill != "3"){
+                cout<<"Enter your skill:";
+                cin>>playerSkill;
+                cout<<endl;
+            }
+            if(playerSkill=="1"){
+                cout<<"You're going head-to-head with Nidhogg!"<<endl;
+                DragonHP -= playerDamage;
+                P.setHealth(P.getHealth() - slashDamage);
+                if(P.getHealth()<=0){
+                    if(P.getLuckyCoin()) P.restoreHP();
+                    else{
+                        cout<<"You become yet another dinner for Nidhogg."<<endl;
+                        return;
+                    }
+                }
+            }
+            else if(playerSkill=="2"){
+                slashDamage*=0.5;
+                cout<<"Your sturdy shield successfully blocked half of the dragon's damage!"<<endl;
+                P.setHealth(P.getHealth() - slashDamage);
+                if(P.getHealth()<=0){
+                    if(P.getLuckyCoin()) P.restoreHP();
+                    else{
+                        cout<<"You become yet another dinner for Nidhogg."<<endl;
+                        return;
+                    }
+                }
+            }
+            else if(playerSkill=="3"){
+                if(P.bagFull()){
+                    cout<<"Enter a potion that you want to use: ";
+                    cin>>useItem;
+                    hasItem = P.hasPotion(useItem);
+                    cout<<endl;
+                    while(!hasItem){
+                        cout<<"You don't have that potion.\nEnter a potion that you want to use: ";
+                        cin>>useItem;
+                        hasItem = P.hasPotion(useItem);
+                        cout<<endl;
+                    }
+                
+                    P.usePotion(useItem);
+                }
+                else {
+                    cout<<"Your bag contains no items."<<endl;
+                }
+            
+            }
+            
+            cout<<"Nidhogg dealt "<<slashDamage<<" damage to you."<<endl;
+            
+            cout<<"\nNidhogg's Stats\nNidhogg's HP: "<<fixed<<setprecision(2)<<DragonHP<<"\nNidhogg's AP: "<<DragonAP<<"\nNidhogg's DEF: "<<DragonDEF<<endl;
+            cout<<"\nYour Stats\nYour HP: "<<fixed<<setprecision(2)<<P.getHealth()<<"\nYour AP: "<<P.getAttack()<<"\nYour DEF: "<<P.getDefense()<<endl;
+            P.openBag();
+            cout<<endl;
+
+            
+        }
+        
+        else if(Skill<r2){
+            cout<<"Nidhogg flew into the sky."<<endl;
+            cout<<"Enter your skill: ";
+            cin>>playerSkill;
+            cout<<endl;
+            while(playerSkill != "1" && playerSkill != "2" && playerSkill != "3"){
+                cout<<"Enter your skill:";
+                cin>>playerSkill;
+                cout<<endl;
+            }
+            if(playerSkill=="1"){
+                cout<<"You cannot harm Nidhogg."<<endl;
+            }
+            else if(playerSkill=="2"){
+                cout<<"Are you playing hide-and-seek with Nidhogg?"<<endl;
+            }
+            else if(playerSkill=="3"){
+                if(P.bagFull()){
+                    cout<<"Enter a potion that you want to use: ";
+                    cin>>useItem;
+                    hasItem = P.hasPotion(useItem);
+                    cout<<endl;
+                    while(!hasItem){
+                        cout<<"You don't have that potion.\nEnter a potion that you want to use: ";
+                        cin>>useItem;
+                        hasItem = P.hasPotion(useItem);
+                        cout<<endl;
+                    }
+                    P.usePotion(useItem);
+                }
+                else {
+                    cout<<"Your bag contains no items."<<endl;
+                }
+            }
+            
+            
+            cout<<"\nNidhogg's Stats\nNidhogg's HP: "<<fixed<<setprecision(2)<<DragonHP<<"\nNidhogg's AP: "<<DragonAP<<"\nNidhogg's DEF: "<<DragonDEF<<endl;
+            cout<<"\nYour Stats\nYour HP: "<<fixed<<setprecision(2)<<P.getHealth()<<"\nYour AP: "<<P.getAttack()<<"\nYour DEF: "<<P.getDefense()<<endl;
+            P.openBag();
+            cout<<endl;
+        }
+        else{
+            cout<<"Nidhogg uses a fire attack."<<endl;
+            cout<<"\nEnter your skill: ";
+            cin>>playerSkill;
+            cout<<endl;
+            while(playerSkill != "1" && playerSkill != "2" && playerSkill != "3"){
+                cout<<"Enter your skill:";
+                cin>>playerSkill;
+                cout<<endl;
+            }
+            if(playerSkill=="1"){
+                cout<<"Your're a tough guy!"<<endl;
+                DragonHP -= playerDamage;
+                P.setHealth(P.getHealth() - fireDamage);
+                if(P.getHealth()<=0){
+                    if(P.getLuckyCoin()) P.restoreHP();
+                    else{
+                        cout<<"You become yet another dinner for Nidhogg."<<endl;
+                        return;
+                    }
+                }
+            }
+            else if(playerSkill=="2"){
+                fireDamage*=0.7;
+                cout<<"Even shields have their limits..."<<endl;
+                P.setHealth(P.getHealth() - fireDamage);
+                if(P.getHealth()<=0){
+                    if(P.getLuckyCoin()) P.restoreHP();
+                    else{
+                        cout<<"You become yet another dinner for Nidhogg."<<endl;
+                        return;
+                    }
+                }
+            }
+            else if(playerSkill=="3"){
+                if(P.bagFull()){
+                    cout<<"Enter a potion that you want to use: ";
+                    cin>>useItem;
+                    hasItem = P.hasPotion(useItem);
+                    cout<<endl;
+                    while(!hasItem){
+                        cout<<"You don't have that potion.\nEnter a potion that you want to use: ";
+                        cin>>useItem;
+                        hasItem = P.hasPotion(useItem);
+                        cout<<endl;
+                    }
+                    P.usePotion(useItem);
+                }
+                else {
+                    cout<<"Your bag contains no items."<<endl;
+                }
+            }
+            
+            
+            cout<<"Nidhogg dealt "<<fireDamage<<" damage to you."<<endl;
+            cout<<"\nNiodhogg's Stats\nNidhogg's HP: "<<fixed<<setprecision(2)<<DragonHP<<"\nNidhogg's AP: "<<DragonAP<<"\nNidhogg's DEF: "<<DragonDEF<<endl;
+            cout<<"\nYour Stats\nYour HP: "<<fixed<<setprecision(2)<<P.getHealth()<<"\nYour AP: "<<P.getAttack()<<"\nYour DEF: "<<P.getDefense()<<endl;
+            P.openBag();
+            cout<<endl;
+        }
+        if(DragonHP<=0)return;
+        playerDamage = P.getAttack() *(1 - DragonDEF/100.0);
+        cout<<"\nThe time to strike back!\n\nEnter your skill: ";
+        cin>>playerSkill;
+        cout<<endl;
+        while(playerSkill != "1" && playerSkill != "2" && playerSkill != "3"){
+            cout<<"Enter your skill:";
+            cin>>playerSkill;
+            cout<<endl;
+        }
+        if(playerSkill=="1"){
+            cout<<"You slash at Nidhogg with your sword."<<endl;
+            DragonHP -= playerDamage;
+        }
+        else if(playerSkill=="2"){
+            cout<<"That afraid of Nidhogg?"<<endl;
+        }
+        else if(playerSkill=="3"){
+            if(P.bagFull()){
+                cout<<"Enter a potion that you want to use: ";
+                cin>>useItem;
+                hasItem = P.hasPotion(useItem);
+                cout<<endl;
+                while(!hasItem){
+                    cout<<"You don't have that potion.\nEnter a potion that you want to use: ";
+                    cin>>useItem;
+                    hasItem = P.hasPotion(useItem);
+                    cout<<endl;
+                }
+                P.usePotion(useItem);
+            }
+            else {
+                cout<<"Your bag contains no items."<<endl;
+            }
+        }
+        cout<<"------------"<<endl;
+        cout<<"\nYour Stats\nYour HP: "<<fixed<<setprecision(2)<<P.getHealth()<<"\nYour AP: "<<P.getAttack()<<"\nYour DEF: "<<P.getDefense()<<endl;
+        P.openBag();
+        cout<<endl;
+        cout<<"\nNiodhogg's Stats\nNidhogg's HP: "<<fixed<<setprecision(2)<<DragonHP<<"\nNidhogg's AP: "<<DragonAP<<"\nNidhogg's DEF: "<<DragonDEF<<endl;
+        cout<<"------------"<<endl;
+    }
+    adventure.setAdventure(true);
+    
+}
+
+class Events{
+    public:
+        void MonsterFighting(Player &P, Adventure stage);
+        void Training(Player &P);
+        void HelpVillager(Player &P);
+        void Witch(Player &P);
+        void SwordOfTheWarrior(Dragon &dragonDEF, Player &P);
+        void LuckyCoin(Player &P);
+        Events();
+        
+        double ShowMonsterHP();
+        int ShowMonsterAP();
+        void SetMonsterHP(double HP);
+        double getMonsterDamage();
+        
+        double ShowBossHP();
+        int ShowBossAP();
+        void setBossHP(double HP);
+        double getBossDamage();
+        void Boss(Player &P, Adventure stage);
+        void Challenge(Adventure stage, Player &P, Dragon &dragonDEF);
+        
+        void combatMonster(Player &P);
+        void combatBoss(Player &P);
+    private:
+        double MonsterHP;
+        int MonsterAP;
+        vector<int> event;//monster, training, villager, witch, sword, coin, boss1, boss2, boss3
+        vector<string> train;//story of how warrior training
+        vector<bool> TFtrain;//This prevents each training event from being triggered repeatedly
+        vector<string> villager;//story of how warrior help villager
+        vector<bool> TFvillager;//Prevents each villager event from being triggered repeatedly
+        double bossHP;
+        int bossAP;
+        double MonsterDamage;
+        double BossDamage;
+        
+        vector<int> NumOfChallenge;
+        vector<string> NameOfChallenge;
+        vector<bool> TFchallenge;
+        vector<bool> TFpotion;
+        int count1;
+        int count2;
+        
+};
+Events::Events(){
+    
+    train = {"The warrior trains under the morning sun to build discipline", "The warrior practices precise sword forms in an empty field.", "The warrior runs long distances to strengthen endurance.", "The warrior lifts weighted logs to improve physical strength.", "The warrior repeats basic footwork drills untils they become instinct.", "The warrior meditates quietly to sharpen mental focus.", "The warrior trains balance by standing on narrow wooden beams.", "The warrior practices breathing control to steady his movements.", "The warrior studies combat theory from ancient manuscripts.", "The warrior practices rapid strikes on training dummies.", "The warrior trains in silence to eliminate unnecessary movement.", "The warrior endures harsh weather to strengthen willpower.", "The warrior performs repetitive drills to perfect technique.", "The warrior trains with heavier equipment to increase power.", "The warrior focuses on reaction speed through reflex exercises.", "The warrior reflects on mistakes and refines his technique."};
+    TFtrain = {true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true};
+    
+    villager = {"The warrior helps a farmer repair his broken fence before sunset.", "The warrior carries water from the river to a drought-stricken village.", "The warrior guides lost villagers safely back to their homes.", "The warrior helps rebuild a damaged roof after a heavy storm.", "The warrior delivers medicine to an elderly villager in need.", "The warrior teaches basic self-defense techniques to protect the village.", "The warrior assists a blacksmith by gathering rare firewood for his forge."};
+    TFvillager = {true, true, true, true, true, true, true};
+    
+    NumOfChallenge = {1,2,3,4,5,6,7,8};
+    NameOfChallenge = {"Witch Game", "Lucky Coin", "The Sword of the Warrior", "Monster Fighting", "Training", "Help Villager", "Boss Level", "Dragon's Lair"};
+    TFchallenge = {true, true, false, true, true, true, false, false};
+    TFpotion= {true, true, true};
+    count1=0;
+    count2=0;
+}
+double Events::ShowMonsterHP(){
+    return MonsterHP;
+}
+int Events::ShowMonsterAP(){
+    return MonsterAP;
+}
+
+void Events::Training(Player &P){
+    double mhp = 5;
+    int Rad = rand() % 16;
+    if(TFtrain.at(Rad)){
+        cout<<train.at(Rad)<<endl;
+        TFtrain.at(Rad) = false;
+        P.increaseMaxHealth(mhp);
+    }
+    //cout<<"After training, your maximum HP increases."<<endl;
+    //cout<<"Current maximum HP: "<<fixed<<setprecision(2)<<mhp<<endl;
+    cout<<"Current Stats\nHP: "<<fixed<<setprecision(2)<<P.getHealth()<<"\nAP: "<<P.getAttack()<<"\nDEF: "<<P.getDefense()<<endl;
+    P.openBag();
+    cout<<endl;
+
+}
+
+
+void Events::HelpVillager(Player &P){
+
+    cout<<"------------"<<endl;
+    int Rad = rand() % 7;
+    if(TFvillager.at(Rad)){
+        cout<<villager.at(Rad)<<endl;
+        TFvillager.at(Rad) = false;
+        P.increaseHealth(P.getMaxHealth());
+    }
+    cout<<"The villagers' feedback restores your HP to its maximum."<<endl;
+    cout<<"Current Stats\nHP: "<<fixed<<setprecision(2)<<P.getHealth()<<"\nAP: "<<P.getAttack()<<"\nDEF: "<<P.getDefense()<<endl;
+    P.openBag();
+    cout<<endl;
+    cout<<"------------"<<endl;
+}
+
+
+void Events::Witch(Player &P){
+    cout<<"------------"<<endl;
+    string game;
+    int RAD = rand()%3;
+    cout<<"Medea: Let's play a game.\nMedea: If you win, you can get a potion from me.\nMedea: If you lose, you'll become my potion-making material."<<endl;
+    int Rad = rand()%2;
+    vector<string> coin={"heads", "tails"};
+    cout<<"Medea: Guess whether this coin is heads or tails?\nEnter heads or tails: ";
+    cin>>game;
+    cout<<endl;
+    while(game!="heads" && game!="tails"){
+        cout<<"Enter heads or tails: ";
+        cin>>game;
+        cout<<endl;
+    }
+    
+    if(game == coin.at(Rad)){
+        cout<<endl<<"Medea: All right, take it."<<endl;
+        if(RAD == 0 && TFpotion.at(RAD)){
+            P.addPotion("Health_Potion");
+            TFpotion.at(RAD) = false;
+            cout<<"You gain HP Potion.\nIt increases health by 20 points after use."<<endl;
+        }
+        else if (RAD==1 && TFpotion.at(RAD)){
+            P.addPotion("Attack_Potion");
+            TFpotion.at(RAD) = false;
+            cout<<"You gain AP Potion.\nIt increases attack by 5 points after use."<<endl;
+        }
+        else if(RAD==2 && TFpotion.at(RAD)){
+            P.addPotion("Defense_Potion");
+            TFpotion.at(RAD) = false;
+            cout<<"You gain DEF Potion.\nIt increases defense by 5 points after use."<<endl;
+        }
+    }
+    else{
+        cout<<"Medea: Congratulations!\nMedea: You've become my material, haha!"<<endl;
+        P.setHealth(0);
+        if(P.getHealth()<=0) if(P.getLuckyCoin()) P.restoreHP();
+    }
+    cout<<"------------"<<endl;
+}
+
+
+void Events::SwordOfTheWarrior(Dragon &dragonDEF, Player &P){
+    cout<<"------------"<<endl;
+    cout<<"Your kindness proves that you are not only a reckless person, but also a gentle one.\nYou have earned the approval of the Sword of the Warrior."<<endl;
+    cout<<"The Sword of the Warrior will increase your AP by 10 and reduce Nidhogg's DEF by 5."<<endl;
+    P.increaseAttack(15);
+    dragonDEF.SetDragonDEF(15);
+    cout<<"------------"<<endl;
+}
+
+
+void Events::LuckyCoin(Player &P){
+    cout<<"------------"<<endl;
+    P.hasLuckyCoin(true);
+    double coin;
+    cout<<"Please enter any number between 0 to 30: ";
+    cin>>coin;
+    while(coin<0 || coin>30){
+        cout<<"\nPlease enter any number between 0 to 30: ";
+        cin>>coin;
+    }
+    cout<<endl;
+    cout<<"Congratulations!\nYou have obtained a lucky coin.\nIt will restore "<<coin<<"% of your HP when you die."<<endl;
+    P.RESTOREHP(coin);
+    cout<<"------------"<<endl;
+}
+
+
+void Events::MonsterFighting(Player &P, Adventure stage){
+    cout<<"------------"<<endl;
+    MonsterHP = 2.0;
+    MonsterAP = 1;
+    if(stage.getStage()>5&& stage.getStage()<10){
+        MonsterHP+=1;
+        MonsterAP+=1;
+    }
+    else if(stage.getStage()>10&&stage.getStage()<15){
+        MonsterHP+=3;
+        MonsterAP+=1;
+    }
+    else if(stage.getStage()>15){
+        MonsterHP+=5;
+        MonsterAP+=1;
+    }
+    combatMonster(P);
+    
+    
+    if(MonsterHP<=0){
+        P.increaseAttack(5);
+        P.increaseDefense(2);
+        cout<<"You defeated the monster.\nYou gained 3 AP and 2 DEF."<<endl;
+        cout<<"Current Stats\nHP: "<<fixed<<setprecision(2)<<P.getHealth()<<"\nAP: "<<P.getAttack()<<"\nDEF: "<<P.getDefense()<<endl;
+        P.openBag();
+        cout<<endl;
+        cout<<"------------"<<endl;
+    }
+    else{
+        return;
+    }
+    
+    
+}
+
+
+double Events::getMonsterDamage(){
+    return MonsterDamage;
+}
+
+void Events::SetMonsterHP(double hp){
+    MonsterHP = hp;
+}
+
+void Events::setBossHP(double hp){
+    bossHP = hp;
+}
+
+double Events::ShowBossHP(){
+    return bossHP;
+}
+int Events::ShowBossAP(){
+    return bossAP;
+}
+
+double Events::getBossDamage(){
+    return BossDamage;
+}
+
+void Events::Boss(Player &P, Adventure stage){
+    cout<<"------------"<<endl;
+    bossHP = 25.0;
+    bossAP = 3;
+    if(stage.getStage()>=10){
+        bossHP +=25.0;
+        bossAP +=2.0;
+        if(stage.getStage()>=15){
+            bossHP += 25.0;
+            bossAP += 2.0;
+        }
+    }
+    combatBoss(P);
+    if(bossHP<=0){
+        cout<<"Your efforts have paid off!\nYou have defeated a formidable enemy!\nKeep going, Warrior!"<<endl;
+    }
+    else{
+        return;
+    }
+    cout<<"------------"<<endl;
+    
+    
+}
+
+
+void Events::Challenge(Adventure stage, Player &P, Dragon &dragonDEF){
+    int sta = stage.getStage();
+    
+    
+    
+    //variable count1, the witch event will be deactivated if it's triggered three time
+    //variable count2, the helpvillager will be deactivated if it's triggered seven time
+    
+    int c1 = 4;
+    int c2 = rand() %6;
+    int c3 = rand() %6;
+    string select;
+    if(sta != 5 && sta != 10 && sta != 15 && sta != 20){
+        if(c2==0 || c2==1){
+            c2 = rand()%6;
+            if(c2 == 1) c2 = rand()%6;
+        }
+        
+        if(c3==0 || c3==1){
+            c3 = rand()%6;
+            if(c3 == 1) c3 = rand()%6;
+        }
+        
+        cout<<"Event 1: "<<NameOfChallenge.at(c1)<<endl;
+        while(!TFchallenge.at(c2)) c2 = rand() %6;
+        cout<<"Event 2: "<<NameOfChallenge.at(c2)<<endl;
+        while(!TFchallenge.at(c3)) c3 = rand() %6;
+        cout<<"Event 3: "<<NameOfChallenge.at(c3)<<endl;
+        
+        cout<<"Enter 1, 2, or 3 to select the event: ";
+        cin>>select;
+        cout<<endl;
+        while(select != "1" && select != "2" && select != "3" && select != "S" && select != "s" && select != "B" && select != "b"){
+            cout<<"Enter 1, 2, or 3 to select the event: ";
+            cin>>select;
+            cout<<endl;
+        }
+        if (!isalpha(select.at(0)))
+        {
+            cout << "You selected event " << select << ": ";
+        }
+        if(select == "1"){
+            cout<<NameOfChallenge.at(c1)<<endl;
+            Training(P);
+        }
+        else if(select == "2"){
+            cout<<NameOfChallenge.at(c2)<<endl;
+            if(NameOfChallenge.at(c2)=="Witch Game"){
+                Witch(P);
+                count1++;
+                if(count1==3) TFchallenge.at(c2) = false;
+            }
+            else if(NameOfChallenge.at(c2)=="Lucky Coin"){
+                LuckyCoin(P);
+                TFchallenge.at(c2) = false;
+            }
+            else if(NameOfChallenge.at(c2)=="The Sword of the Warrior"){
+                SwordOfTheWarrior(dragonDEF, P);
+                TFchallenge.at(c2) = false;
+            }
+            else if(NameOfChallenge.at(c2)=="Monster Fighting"){
+                MonsterFighting(P, stage);
+            }
+            else if(NameOfChallenge.at(c2)=="Training"){
+                Training(P);
+            }
+            else{
+                HelpVillager(P);
+                count2++;
+                if(count2==7) {
+                    TFchallenge.at(c2) = false;
+                    TFchallenge.at(2) = true;
+                }
+            }
+        }
+        else if (select == "S" || select == "s")
+        {
+            P.stats();
+            cin>>select;
+        }
+        else if (select == "B" || select == "b")
+        {
+            P.openBag();
+            cin>>select;
+        }
+        else {
+            cout<<NameOfChallenge.at(c3)<<endl;
+            if(NameOfChallenge.at(c3)=="Witch Game"){
+                Witch(P);
+                count1++;
+                if(count1==3) TFchallenge.at(c3) = false;
+            }
+            else if(NameOfChallenge.at(c3)=="Lucky Coin"){
+                LuckyCoin(P);
+                TFchallenge.at(c3) = false;
+            }
+            else if(NameOfChallenge.at(c3)=="The Sword of the Warrior"){
+                SwordOfTheWarrior(dragonDEF, P);
+                TFchallenge.at(c3) = false;
+            }
+            else if(NameOfChallenge.at(c3)=="Monster Fighting"){
+                MonsterFighting(P, stage);
+            }
+            else if(NameOfChallenge.at(c3)=="Training"){
+                Training(P);
+            }
+            else{
+                HelpVillager(P);
+                count2++;
+                if(count2==7){
+                    TFchallenge.at(c3) = false;
+                    TFchallenge.at(2) = true;
+                }
+                
+            }
+        }
+    }
+    
+    else if(sta == 5 || sta == 10 || sta == 15){
+        cout<<NameOfChallenge.at(6)<<endl;
+        cout<<"Enter 1 to challenge the boss: ";
+        cin>>select;
+        cout<<endl;
+        while(select != "1"){
+            cout<<"Enter 1 to challenge the boss: ";
+            cin>>select;
+            cout<<endl;
+        }
+        Boss(P, stage);
+        
+        
+    }
+    else{
+        cout<<NameOfChallenge.at(7)<<endl;
+        cout<<"Enter 1 to enter the dragon's lair and challenge Nidhogg: ";
+        cin>>select;
+        cout<<endl;
+        while(select != "1"){
+            cout<<"Enter 1 to enter the dragon's lair and challenge Nidhogg: ";
+            cin>>select;
+            cout<<endl;
+        }
+        dragonDEF.DragonLair(P);
+    }
+}
+
+
+
+void Events::combatMonster(Player &P){
+    string playerSkill;
+    double ap;
+    string useItem;
+    bool hasItem;
+    cout<<"\nMonster's Stats\nMonster's HP: "<<MonsterHP<<"\nNonster's AP: "<<MonsterAP<<endl;
+
+    while(MonsterHP>0 && P.getHealth()>0){
+        MonsterDamage = MonsterAP;
+        
+        cout<<"\nThe monster is charging up..."<<endl;
+        cout<<"\nEnter your skills: ";
+        cin>>playerSkill;
+        cout<<endl;
+        while(playerSkill != "1" && playerSkill != "2" && playerSkill != "3"){
+            cout<<"Enter your skills: ";
+            cin>>playerSkill;
+            cout<<endl;
+        }
+        if(playerSkill=="2"){
+            MonsterDamage *= (1-P.getDefense()/100.0)*0.5;
+            cout<<"You blocked half of the monster's damage."<<endl;
+        }
+        else if(playerSkill =="1"){
+            cout<<"You choose to attack head-on!"<<endl;
+            ap = P.getAttack();
+            SetMonsterHP(MonsterHP - ap);
+        }
+        else if(playerSkill =="3"){
+            if(P.bagFull()){
+                cout<<"Enter a potion that you want to use: ";
+                cin>>useItem;
+                hasItem = P.hasPotion(useItem);
+                cout<<endl;
+                while(!hasItem){
+                    cout<<"You don't have that potion.\nEnter a potion that you want to use: ";
+                    cin>>useItem;
+                    hasItem = P.hasPotion(useItem);
+                    cout<<endl;
+                }
+                P.usePotion(useItem);
+            }
+            else {
+                cout<<"Your bag contains no items."<<endl;
+            }
+            
+        }
+        
+        cout<<"The monster dealt you "<<MonsterDamage<<" points of damage."<<endl;
+        P.setHealth(P.getHealth()-MonsterDamage);
+        if(P.getHealth()<=0){
+            if(P.getLuckyCoin()) P.restoreHP();
+            else{
+                cout<<"You were defeated by the monster."<<endl;
+                return;
+            }
+        }
+        
+        cout<<"\nMonster's Stats\nMonster's HP: "<<fixed<<setprecision(2)<<MonsterHP<<"\nNonster's AP: "<<MonsterAP<<endl;
+        cout<<"\nYour Stats\nYour HP: "<<fixed<<setprecision(2)<<P.getHealth()<<"\nYour AP: "<<P.getAttack()<<"\nYour DEF: "<<P.getDefense()<<endl;
+        P.openBag();
+        cout<<endl;
+        if(MonsterHP<=0) return;
+        MonsterDamage = MonsterAP;
+        cout<<"Your turn: ";
+        cin>>playerSkill;
+        cout<<endl;
+        while(playerSkill != "1" && playerSkill != "2" && playerSkill != "3"){
+            cout<<"Your turn: ";
+            cin>>playerSkill;
+            cout<<endl;
+        }
+        
+        if(playerSkill=="2"){
+            MonsterDamage *= (1-P.getDefense()/100.0)*0.5;
+            cout<<"You chose to defend, but the monster didn't attack."<<endl;
+        }
+        else if(playerSkill =="1"){
+            cout<<"You bravely cleave at the monster!"<<endl;
+            ap = P.getAttack();
+            SetMonsterHP(MonsterHP - ap);
+        }
+        else if(playerSkill =="3"){
+            if(P.bagFull()){
+                cout<<"Enter a potion that you want to use: ";
+                cin>>useItem;
+                hasItem = P.hasPotion(useItem);
+                cout<<endl;
+                while(!hasItem){
+                    cout<<"You don't have that potion.\nEnter a potion that you want to use: ";
+                    cin>>useItem;
+                    hasItem = P.hasPotion(useItem);
+                    cout<<endl;
+                }
+                P.usePotion(useItem);
+            }
+            else {
+                cout<<"Your bag contains no items."<<endl;
+            }
+            
+        }
+        
+        cout<<"\nYour Stats\nYour HP: "<<fixed<<setprecision(2)<<P.getHealth()<<"\nYour AP: "<<P.getAttack()<<"\nYour DEF: "<<P.getDefense()<<endl;
+        P.openBag();
+        cout<<endl;
+        cout<<"\nMonster's Stats\nMonster's HP: "<<fixed<<setprecision(2)<<MonsterHP<<"\nNonster's AP: "<<MonsterAP<<endl;
+        
+    }
+}
+
+
+void Events::combatBoss(Player &P){
+    string playerSkill;
+    string useItem;
+    bool hasItem;
+    cout<<"\nBoss' Stats\nBoss' HP: "<<bossHP<<"\nBoss' AP: "<<bossAP<<endl;
+    while(bossHP>0 && P.getHealth()>0){
+        BossDamage = bossAP;
+        
+        
+        cout<<"\nThe boss is about to inflict massive damage on you."<<endl;
+        cout<<"\nEnter your skills: ";
+        cin>>playerSkill;
+        cout<<endl;
+        while(playerSkill != "1" && playerSkill != "2" && playerSkill != "3"){
+            cout<<"Enter your skills: ";
+            cin>>playerSkill;
+            cout<<endl;
+        }
+        
+        if(playerSkill=="2") {
+            BossDamage *= (1-P.getDefense()/100.0)*0.5;
+            cout<<"You blocked half of the boss' damage."<<endl;
+        }
+        else if(playerSkill =="1"){
+            cout<<"You choose to attack head-on!"<<endl;
+            setBossHP(bossHP-P.getAttack());
+        }
+        else if(playerSkill =="3"){
+            if(P.bagFull()){
+                cout<<"Enter a potion that you want to use: ";
+                cin>>useItem;
+                hasItem = P.hasPotion(useItem);
+                cout<<endl;
+                while(!hasItem){
+                    cout<<"You don't have that potion.\nEnter a potion that you want to use: ";
+                    cin>>useItem;
+                    hasItem = P.hasPotion(useItem);
+                    cout<<endl;
+                }
+                P.usePotion(useItem);
+            }
+            else {
+                cout<<"Your bag contains no items."<<endl;
+            }
+        }
+        
+        
+        cout<<"The boss dealt "<<BossDamage<<" points of damage."<<endl;
+        P.setHealth(P.getHealth() - BossDamage);
+        if(P.getHealth()<=0){
+            if(P.getLuckyCoin()) P.restoreHP();
+            else{
+                cout<<"The boss is much stronger than you think.\nKeep up the good work!"<<endl;
+                return;
+            }
+        }
+        if(bossHP<=0) return;
+        cout<<fixed<<setprecision(2)<<"\nBoss' Stats\nBoss's HP: "<<bossHP<<"\nBoss' AP: "<<bossAP<<endl;
+        cout<<fixed<<setprecision(2)<<"\nYour Stats\nYour HP: "<<P.getHealth()<<"\nYour AP: "<<P.getAttack()<<"\nYour DEF: "<<P.getDefense()<<endl;
+        P.openBag();
+        cout<<endl;
+        BossDamage = bossAP;
+        cout<<"Your turn: ";
+        cin>>playerSkill;
+        cout<<endl;
+        while(playerSkill != "1" && playerSkill != "2" && playerSkill != "3"){
+            cout<<"Your turn: ";
+            cin>>playerSkill;
+            cout<<endl;
+        }
+        
+        if(playerSkill=="2"){
+            BossDamage *= (1-P.getDefense()/100.0)*0.5;
+            cout<<"You chose to defend, but the boss didn't attack."<<endl;
+        }
+        else if(playerSkill =="1"){
+            cout<<"You bravely cleave at the boss!"<<endl;
+            setBossHP(bossHP - P.getAttack());
+        }
+        else if(playerSkill =="3"){
+            if(P.bagFull()){
+                cout<<"Enter a potion that you want to use: ";
+                cin>>useItem;
+                hasItem = P.hasPotion(useItem);
+                cout<<endl;
+                while(!hasItem){
+                    cout<<"You don't have that potion.\nEnter a potion that you want to use: ";
+                    cin>>useItem;
+                    hasItem = P.hasPotion(useItem);
+                    cout<<endl;
+                }
+                P.usePotion(useItem);
+            }
+            else {
+                cout<<"Your bag contains no items."<<endl;
+            }
+        }
+        
+        cout<<"\nYour Stats\nYour HP: "<<fixed<<setprecision(2)<<P.getHealth()<<"\nYour AP: "<<P.getAttack()<<"\nYour DEF: "<<P.getDefense()<<endl;
+        P.openBag();
+        cout<<endl;
+        cout<<"\nBoss' Stats\nBoss' HP: "<<fixed<<setprecision(2)<<bossHP<<"\nBoss' AP: "<<bossAP<<endl;
+    }
+}
+
+int main()
+{
+    Adventure adventure;
+    Player P;
+    Events event;
+    Dragon dragonDEF;
+    string input;
+    
+    adventure.story();
+    adventure.keybinds();
+    srand(time(0));
+    
+    cout << "Write your name" << endl;
+    getline(cin, input);
+    P.setName(input);
+    
+    while (adventure.getAdventure() == false && P.getHealth() > 0) //game ends when adventure is completed or when player is dead
+    {
+        
+        adventure.showMap();
+        event.Challenge(adventure, P, dragonDEF);
+        if (P.getHealth() == 0)
+        {
+            P.setHealth(0);
+        }
+        adventure.updateStage();
+        if(dragonDEF.ShowDragonHP()<=0){
+            cout << "             `\\                 /'\n";
+            cout << "                \\\\             //\n";
+            cout << "                 ))  __  __   ((               ,\n";
+            cout << " `,)            ((_.-\\ )( /-._))              '` ,\n";
+            cout << "  (              \\) __)][(__ (/               `,\n";
+            cout << " .:.             ( -0- )( -0- )              .:.\n";
+            cout << " )X(             `\\(   ][   )/'              )X(\n";
+            cout << "[%%%]              `\\  ][  /'               [%%%]\n";
+            cout << " |#|------OOO--------(o)(o)---------OOO------|#|\n";
+            cout << " |#|      VVV         V  V          VVV      |#|\n";
+            cout << " |#|             Congratulations!            |#|\n";
+            cout << " |#|      You have defeated the dragon.      |#|\n";
+            cout << " |#|  The kingdom is grateful for your help, |#|\n";
+            cout << " |#|          and your story will be         |#|\n";
+            cout << " |#|       remembered for ages to come.      |#|\n";
+            cout << " |#|-----------------------------------------|#|\n";
+            cout << "[[|]]                                       [[|]]\n";
+            adventure.setAdventure(true);
+            //this ascii art made by Grey Cloak, from https://www.asciiart.eu/collections/official-list-of-dragon-ascii-art
+        }
+    }
+    if (P.getHealth() == 0 || P.getHealth() < 0)
+    {
+        cout << "You were slain, and your adventure ends here." << endl;
+    }
+    
+    return 0;
+}
